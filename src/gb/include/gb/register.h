@@ -29,8 +29,8 @@ namespace motane {
 			friend class Interpreter;
 			friend class Cpu;
 			
-		    short a, b, c, d, e, h, l, f;
-			short sp, pc;
+			short a, b, c, d, e, h, l, f = 0;
+			short sp, pc = 0;
 			
 		public:
 			Registers()
@@ -41,7 +41,7 @@ namespace motane {
 		    friend class Interpreter;
 			friend class Cpu;
 			
-			u32 m, t;
+			u32 m, t = 0;
 		
 		public:
 			Clock() = default;

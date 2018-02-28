@@ -22,6 +22,7 @@
 #include <utils/log.h>
 
 #include <vector>
+#include <mutex>
 
 namespace motane {
     namespace gb {
@@ -52,6 +53,7 @@ namespace motane {
 				}
 				
 			    T res;
+				
 				memcpy(&res, &mem[offset-mirror], sizeof(T));
 					
 				return res;

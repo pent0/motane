@@ -30,12 +30,13 @@ namespace motane {
 
 		void Gameboy::init(const char* romPath) {
 			rom = load(romPath);
-			std::ifstream file(romPath);
-			std::stringstream strstream;
+			
+			std::vector<char> data(rom.romSize);
+			std::ifstream file(romPath, std::ios::binary);
 
-			strstream << file.rdbuf();
+			file.read(&data[0], rom.romSize);
 
-			mem = fillMemWithRom(strstream.str().data(), rom.romSize);
+			mem = fillMemWithRom(data.data(), rom.romSize);
 		}
 
 		void Gameboy::hold() {

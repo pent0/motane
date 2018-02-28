@@ -86,6 +86,13 @@
     clock.add_t(4); \
 }
 
+#define ld_rn_instr(r) void \
+    token_concat2_p(ld, r)_n() { \
+    reg.##r = mem.read<u8>(reg.pc++); \
+    clock.add_m(1); \
+    clock.add_t(4); \
+}
+
 #define ld_t1_switch_decl() \
     instr_switch_1p_2r_decl(0x40, ld, b) \
     instr_switch_1p_2r_decl(0x48, ld, c) \
@@ -99,6 +106,18 @@
 
 #define inc_t1_switch_decl() \
     instr_switch_1p_1r_t1_decl(0x04, inc)
+
+#define and_t1_switch_decl() \
+    instr_switch_1p_2r_decl(0xA0, and, a)
+
+#define xor_t1_switch_decl() \
+    instr_switch_1p_2r_decl(0xA8, xor, a)
+
+#define or_t1_switch_decl() \
+    instr_switch_1p_2r_decl(0xB0, or, a)
+
+#define ld_rn_t1_switch_decl() \
+    instr_switch_1p_1r_1n_t1_decl(0x06, ld) 
 
 namespace motane {
     namespace gb {
@@ -126,12 +145,55 @@ namespace motane {
 			void jp_nn() {
 				reg.pc = mem.read<u16>(reg.pc);
 
-			    motane_log_info("Jumping to address: {}", reg.pc);
+				clock.add_m(3);
+				clock.add_t(12);
+			}
+
+			void ld_hl_nn() {
+				reg.l = mem.read<u8>(reg.pc++);
+				reg.h = mem.read<u8>(reg.pc++);
 
 				clock.add_m(3);
 				clock.add_t(12);
 			}
-			
+
+			void inc_bc() { 
+				reg.c = (reg.c + 1) & 255;
+
+				if (!reg.c) 
+					reg.b = (reg.b + 1) & 255;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			void inc_de() {
+				reg.e = (reg.e + 1) & 255;
+
+				if (!reg.e)
+					reg.d = (reg.d + 1) & 255;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			void inc_hl() {
+				reg.l = (reg.l + 1) & 255;
+
+				if (!reg.l)
+					reg.h = (reg.h + 1) & 255;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			void inc_sp() {
+				reg.sp = (reg.sp + 1) & 65535; 
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
 			instr_reg88_1p_decl(add_a_instr)
 			
 			instr_reg88_1p_decl(and_a_instr)
@@ -140,6 +202,8 @@ namespace motane {
 
 			instr_reg88_1p_decl(dec_instr)
 			instr_reg88_1p_decl(inc_instr)
+
+			instr_reg88_1p_decl(ld_rn_instr)
 	
 			instr_reg88_2p_decl(ld_instr)
 
@@ -155,10 +219,19 @@ namespace motane {
 				switch (op) {
 				     case 0x00: nop(); break;
 					 case 0xc3: jp_nn(); break;
-				     
+					 case 0x21: ld_hl_nn(); break;
+					 case 0x03: inc_bc(); break;
+					 case 0x13: inc_de(); break;
+					 case 0x23: inc_hl(); break;
+					 case 0x33: inc_sp(); break;
+
 				     ld_t1_switch_decl()
 					 dec_t1_switch_decl()
 					 inc_t1_switch_decl()
+					 and_t1_switch_decl()
+				     xor_t1_switch_decl()
+				     or_t1_switch_decl()
+					 ld_rn_t1_switch_decl()
 
 					 default: motane_log_error("Unimplemented opcode: {:x}", op); return false;
 				}
