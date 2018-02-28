@@ -5,4 +5,5 @@ add_library(motaneutils
 	 include/utils/decl.h
 	 include/utils/conv.h
 	 include/utils/type.h
-     src/conv.cpp)
+     src/conv.cpp
+	 src/log.cpp)

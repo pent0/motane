@@ -15,7 +15,8 @@ namespace motane {
 			short sp, pc;
 			
 		public:
-		    Registers();
+			Registers()
+				:pc(0x100) {}
 		};
 		
 		class Clock {
@@ -25,7 +26,7 @@ namespace motane {
 			u32 m, t;
 		
 		public:
-		    Clock();
+			Clock() = default;
 			
 			void add_m(u32 c) { m += c; }
 			void add_t(u32 c) { t += c; }

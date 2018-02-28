@@ -57,15 +57,24 @@
     clock.add_m(4); \
 }
 
-#define dec16_instr(r1, r2) void dec_##r1##r2() { \
+#define dec16_instr(r1, r2) voiddec_##r1##r2() { \
 \
 }
 
-#define ld_instr(r1, r2) void ld_##r1_##r2() { \
+#define ld_instr(r1, r2) void \
+    token_concat3_p(ld, r1, r2) () { \
     reg.##r1 = reg.##r2; \
     clock.add_m(1); \
     clock.add_t(4); \
 }
+
+#define ld_t1_switch_decl() \
+    instr_switch_1p_decl(0x40, ld, b) \
+    instr_switch_1p_decl(0x48, ld, c) \
+    instr_switch_1p_decl(0x50, ld, d) \
+    instr_switch_1p_decl(0x58, ld, e) \
+    instr_switch_1p_decl(0x60, ld, h) \
+    instr_switch_1p_decl(0x68, ld, l) 
 
 namespace motane {
     namespace gb {
@@ -89,6 +98,15 @@ namespace motane {
 				clock.add_m(1);
 				clock.add_t(4);
 			}
+
+			void jp_nn() {
+				reg.pc = mem.read<u16>(reg.pc);
+
+			    motane_log_info("Jumping to address: {}", reg.pc);
+
+				clock.add_m(3);
+				clock.add_t(12);
+			}
 			
 			instr_reg88_1p_decl(add_a_instr)
 			
@@ -101,6 +119,26 @@ namespace motane {
 	
 			instr_reg88_2p_decl(ld_instr)
 
+		public:
+
+			Interpreter() = delete;
+			Interpreter(Memory &mem, Registers &reg, Clock &clock)
+				: mem(mem), reg(reg), clock(clock) {}
+
+			bool fetch() {
+				auto op = mem.read<u8>(reg.pc++);              // Fetch instruction
+			 
+				switch (op) {
+				     case 0x00: nop(); break;
+					 case 0xc3: jp_nn(); break;
+				     
+				     ld_t1_switch_decl()
+					 
+					 default: motane_log_error("Unimplemented opcode: {:x}", op); return false;
+				}
+
+				return true;
+			}
 		};
 	};
 };

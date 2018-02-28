@@ -1,11 +1,13 @@
 #pragma once
-#pragma once
 
 #include <spdlog/logger.h>
+#include <memory>
 
-extern std::shared_ptr<spdlog::logger> g_logger;
+namespace motane {
+	extern std::shared_ptr<spdlog::logger> g_logger;
 
-void init_logging();
+	void initLogging();
+}
 
 #define motane_log_trace(fmt, ...) g_logger->trace("[ {:s} ]:    " fmt, __FUNCTION__, ## __VA_ARGS__)
 #define motane_log_debug(fmt, ...) g_logger->debug("[ {:s} ]:    " fmt, __FUNCTION__, ## __VA_ARGS__)

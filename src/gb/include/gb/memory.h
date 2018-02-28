@@ -25,7 +25,7 @@ namespace motane {
 				if (0xFEA0 <= offset &&
                     offset <= 0xFEFF) {
 					motane_log_warn("Trying to access invalid offset: {}", offset);
-					return T();
+					return T{};
 				}
 				
 			    if (0xE000 <= offset &&
@@ -33,7 +33,7 @@ namespace motane {
 					mirror = 0xC000;
 				}
 				
-			    T res();
+			    T res;
 				memcpy(&res, &mem[offset-mirror], sizeof(T));
 					
 				return res;
@@ -47,6 +47,10 @@ namespace motane {
 			void clear() {
 		        mem.clear();
 			}
+
+			friend Memory fillMemWithRom(const char *data, u32 romSize);
 		};
+
+		Memory fillMemWithRom(const char *data, u32 romSize);
 	}
 }
