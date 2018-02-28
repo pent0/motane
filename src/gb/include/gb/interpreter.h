@@ -1,3 +1,21 @@
+/*
+	Motane
+	Copyright (C) 2018 Do Trong Thu
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #pragma once
 
 #include <gb/register.h>
@@ -69,12 +87,18 @@
 }
 
 #define ld_t1_switch_decl() \
-    instr_switch_1p_decl(0x40, ld, b) \
-    instr_switch_1p_decl(0x48, ld, c) \
-    instr_switch_1p_decl(0x50, ld, d) \
-    instr_switch_1p_decl(0x58, ld, e) \
-    instr_switch_1p_decl(0x60, ld, h) \
-    instr_switch_1p_decl(0x68, ld, l) 
+    instr_switch_1p_2r_decl(0x40, ld, b) \
+    instr_switch_1p_2r_decl(0x48, ld, c) \
+    instr_switch_1p_2r_decl(0x50, ld, d) \
+    instr_switch_1p_2r_decl(0x58, ld, e) \
+    instr_switch_1p_2r_decl(0x60, ld, h) \
+    instr_switch_1p_2r_decl(0x68, ld, l) 
+
+#define dec_t1_switch_decl() \
+    instr_switch_1p_1r_t1_decl(0x05, dec)
+
+#define inc_t1_switch_decl() \
+    instr_switch_1p_1r_t1_decl(0x04, inc)
 
 namespace motane {
     namespace gb {
@@ -133,7 +157,9 @@ namespace motane {
 					 case 0xc3: jp_nn(); break;
 				     
 				     ld_t1_switch_decl()
-					 
+					 dec_t1_switch_decl()
+					 inc_t1_switch_decl()
+
 					 default: motane_log_error("Unimplemented opcode: {:x}", op); return false;
 				}
 
