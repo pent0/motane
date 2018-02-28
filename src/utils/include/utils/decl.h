@@ -72,4 +72,13 @@
   case code + 0x28: tokenizing_p(name)_l(); break;   \
   case code + 0x38: tokenizing_p(name)_a(); break;
 
+#define instr_switch_1p_1r_1n_t1_decl(code, name) \
+  case code + 0: tokenizing_p(name)_b_n(); break;   \
+  case code + 0x10: tokenizing_p(name)_d_n(); break;   \
+  case code + 0x20: tokenizing_p(name)_h_n(); break;   \
+  case code + 0x08: tokenizing_p(name)_c_n(); break;   \
+  case code + 0x18: tokenizing_p(name)_e_n(); break;   \
+  case code + 0x28: tokenizing_p(name)_l_n(); break;   \
+  case code + 0x38: tokenizing_p(name)_a_n(); break;
+
 //case code + 6: name_##n_hl(N, Hl); break;
