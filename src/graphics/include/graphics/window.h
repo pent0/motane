@@ -20,7 +20,11 @@
 
 #include <GLFW/glfw3.h>
 
+#include <graphics/type.h>
+
 #include <utils/type.h>
+#include <utils/vector.h>
+
 #include <memory>
 #include <string>
 
@@ -30,13 +34,42 @@ namespace motane {
 			GLFWwindow* mainWindow;
 			Window* linkWindow;
 
-			u32 width, height, x, y;
+			u32 _width, _height, x, y;
 
-			std::string title;
+			std::string _title;
+			
+			RenderAPI api;
+
+		protected:
+
+			void onWindowSizeChange(GLFWwindow *window, int newSizeX, int newSizeY);
+			void onWindowPosChange(GLFWwindow *window, int newPosX, int newPosY);
+
 		public:
-			Window() = default;
+
+			Window();
 			Window(const std::string title, const u32 width, const u32 height,
-				const u32 x, const u32 y, Window *linkAntWindow = nullptr);
+				const u32 x, const u32 y, Window *linkAntWindow = nullptr, RenderAPI api = RenderAPI::OpenGL,
+				bool resizeable = false, bool showMouse = false);
+
+			std::string title() const;
+			void title(const std::string newTitle);
+
+			// Split the window into 2 other windows. 
+			void split();
+
+			bool close() const;
+			void close(const bool op);
+
+			math::vec2 extent() const;
+
+			void width(const u32 newWidth);
+			void height(const u32 newHeight);
+
+			void extent(const math::vec2 newExtent);
+
+			math::vec2 pos() const;
+			void pos(const math::vec2 newPos);
 		};
 	}
 }

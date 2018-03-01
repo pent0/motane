@@ -4,6 +4,8 @@ add_library(motanegraphics
      include/graphics/ogl/framebuffer.h
 	 include/graphics/type.h
 	 include/graphics/window.h
-     src/ogl/framebuffer.cpp)
+	 include/graphics/framebuffer_soft.h
+     src/ogl/framebuffer.cpp
+	 src/window.cpp)
 
 target_link_libraries(motanegraphics glfw)
