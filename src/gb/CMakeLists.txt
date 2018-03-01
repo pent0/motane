@@ -6,8 +6,9 @@ add_library(motanegb
      include/gb/memory.h
      include/gb/interpreter.h
 	 include/gb/gameboy.h
+	 include/gb/gpu.h
      src/memory.cpp
 	 src/loader.cpp
 	 src/gameboy.cpp)
 
-target_link_libraries(motanegb motaneutils)
+target_link_libraries(motanegb motaneutils motanegraphics)

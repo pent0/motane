@@ -158,40 +158,189 @@ namespace motane {
 			}
 
 			void inc_bc() { 
-				reg.c = (reg.c + 1) & 255;
+				reg.c += 1;
 
 				if (!reg.c) 
-					reg.b = (reg.b + 1) & 255;
+					reg.b += 1;
 
 				clock.add_m(1);
 				clock.add_t(4);
 			}
 
 			void inc_de() {
-				reg.e = (reg.e + 1) & 255;
+				reg.e += 1;
 
 				if (!reg.e)
-					reg.d = (reg.d + 1) & 255;
+					reg.d += 1;
 
 				clock.add_m(1);
 				clock.add_t(4);
 			}
 
 			void inc_hl() {
-				reg.l = (reg.l + 1) & 255;
+				reg.l += 1;
 
 				if (!reg.l)
-					reg.h = (reg.h + 1) & 255;
+					reg.h += 1;
 
 				clock.add_m(1);
 				clock.add_t(4);
 			}
 
 			void inc_sp() {
-				reg.sp = (reg.sp + 1) & 65535; 
+				reg.sp += 1; 
 
 				clock.add_m(1);
 				clock.add_t(4);
+			}
+
+			void ld_cbc_a() {
+				mem.write<u8>(make_u16(reg.b, reg.c), reg.a);
+
+				clock.add_m(2);
+				clock.add_t(8);
+			}
+
+			void ld_cde_a() {
+				mem.write<u8>(make_u16(reg.d, reg.e), reg.a);
+
+				clock.add_m(2);
+				clock.add_t(8);
+			}
+
+			void ld_chli_a() {
+				mem.write<u8>(make_u16(reg.h, reg.l), reg.a);
+
+				reg.l += 1;
+
+				if (!reg.l)
+					reg.h += 1;
+
+				clock.add_m(2);
+				clock.add_t(8);
+			}
+
+			void ld_chld_a() {
+				mem.write<u8>(make_u16(reg.h, reg.l), reg.a);
+
+				reg.l -= 1;
+
+				if (reg.l == 255)
+					reg.h -= 1;
+
+				clock.add_m(2);
+				clock.add_t(8);
+			}
+
+			void dec_bc() {
+				reg.c -= 1;
+
+				if (reg.b == 255)
+					reg.b -= 1;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			void dec_de() {
+				reg.e -= 1;
+
+				if (reg.e == 255)
+					reg.d -= 1;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			void  dec_hl() {
+				reg.l -= 1;
+
+				//Auto overflow, jumpback to 255, so not to worry
+				if (reg.l == 255)
+					reg.h -= 1;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			void dec_sp() {
+				reg.sp -= 1;
+
+				clock.add_m(1);
+				clock.add_t(4);
+			}
+
+			//From here, jump function
+			void jr_nz_n() {
+				s16 i = static_cast<s16>(mem.read<u8>(reg.pc++));
+
+				if (i > 127) {
+					i = -((~i + 1) & 255);
+				}
+
+				clock.add_m(2);
+				clock.add_t(8);
+
+				if (!(reg.f & zero)) {
+					reg.pc += i;
+
+					clock.add_m(1);
+					clock.add_t(4);
+				}
+			}
+
+			void jr_nc_n() {
+				s16 i = static_cast<s16>(mem.read<u8>(reg.pc++));
+
+				if (i > 127) {
+					i = -((~i + 1) & 255);
+				}
+
+				clock.add_m(2);
+				clock.add_t(8);
+
+				if (!(reg.f & carry)) {
+					reg.pc += i;
+
+					clock.add_m(1);
+					clock.add_t(4);
+				}
+			}
+
+			void jr_c_n() {
+				s16 i = static_cast<s16>(mem.read<u8>(reg.pc++));
+
+				if (i > 127) {
+					i = -((~i + 1) & 255);
+				}
+
+				clock.add_m(2);
+				clock.add_t(8);
+
+				if (reg.f & carry) {
+					reg.pc += i;
+
+					clock.add_m(1);
+					clock.add_t(4);
+				}
+			}
+
+			void jr_z_n() {
+				s16 i = static_cast<s16>(mem.read<u8>(reg.pc++));
+
+				if (i > 127) {
+					i = -((~i + 1) & 255);
+				}
+
+				clock.add_m(2);
+				clock.add_t(8);
+
+				if (reg.f & zero) {
+					reg.pc += i;
+
+					clock.add_m(1);
+					clock.add_t(4);
+				}
 			}
 
 			instr_reg88_1p_decl(add_a_instr)
@@ -216,6 +365,9 @@ namespace motane {
 			bool fetch() {
 				auto op = mem.read<u8>(reg.pc++);              // Fetch instruction
 			 
+				motane_log_info("Code: 0x{:x}", op);
+
+				//These are enough to run Tetris open screen for now :)
 				switch (op) {
 				     case 0x00: nop(); break;
 					 case 0xc3: jp_nn(); break;
@@ -224,6 +376,18 @@ namespace motane {
 					 case 0x13: inc_de(); break;
 					 case 0x23: inc_hl(); break;
 					 case 0x33: inc_sp(); break;
+					 case 0x02: ld_cbc_a(); break;
+					 case 0x12: ld_cde_a(); break;
+					 case 0x22: ld_chli_a(); break;
+					 case 0x32: ld_chld_a(); break;
+					 case 0x0B: dec_bc(); break;
+					 case 0x1B: dec_de(); break;
+					 case 0x2B: dec_hl(); break;
+					 case 0x3B: dec_sp(); break;
+					 case 0x20: jr_nz_n(); break;
+					 case 0x28: jr_z_n(); break;
+					 case 0x30: jr_nc_n(); break;
+					 case 0x38: jr_c_n(); break;
 
 				     ld_t1_switch_decl()
 					 dec_t1_switch_decl()

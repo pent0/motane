@@ -18,36 +18,22 @@
 
 #pragma once
 
-#include <utils/type.h>
+#include <vector>
+
+#include <graphics/framebuffer_soft.h>
 
 namespace motane {
-    namespace gb {
-		class Interpreter;
-		class Cpu;
-		
-	    class Registers {
-			friend class Interpreter;
-			friend class Cpu;
-			
-			u8 a, b, c, d, e, h, l, f = 0;
-			u16 sp, pc = 0;
-			
+	namespace gb {
+		class Memory;
+
+		class GameboyGPU {
+			graphics::FramebufferSoft framebuffer;
+
+			// Every GPU has access to the memory, isnt it (it's the GPU mem, but i grouped it :P)
+			Memory &mem;
+
 		public:
-			Registers()
-				:pc(0x100) {}
-		};
-		
-		class Clock {
-		    friend class Interpreter;
-			friend class Cpu;
-			
-			u32 m, t = 0;
-		
-		public:
-			Clock() = default;
-			
-			void add_m(u32 c) { m += c; }
-			void add_t(u32 c) { t += c; }
+
 		};
 	}
 }

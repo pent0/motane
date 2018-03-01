@@ -39,6 +39,8 @@ namespace motane {
 			
 			template <typename T>
 			T read(u32 offset) {
+				motane_log_info("Reading from offset: 0x{:x}", offset);
+
 				u32 mirror = 0;
 				
 				if (0xFEA0 <= offset &&
@@ -60,7 +62,9 @@ namespace motane {
 			}
 			
 			template <typename T>
-			void write(u32 offset, T data) {
+			void write(s32 offset, T data) {
+				//Yet no barrier
+				motane_log_info("Writing to offset: 0x{:x}", offset);
 			    memcpy(&mem[offset], &data, sizeof(T));
 			}
 			
