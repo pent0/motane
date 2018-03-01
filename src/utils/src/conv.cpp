@@ -26,4 +26,12 @@ namespace motane {
 	std::pair<s8, s8> extract_s16(s16 hl) {
 		return std::make_pair((hl >> 8) & 255, hl & 255);
 	}
+
+	u16 make_u16(u8 h, u8 l) {
+		return h << 8 + l;
+	}
+
+	std::pair<u8, u8> extract_u16(u16 hl) {
+		return std::make_pair((hl >> 8) & 255, hl & 255);
+	}
 }

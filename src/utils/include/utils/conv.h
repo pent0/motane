@@ -24,4 +24,7 @@
 namespace motane {
 	s16 make_s16(s8 h, s8 l);
 	std::pair<s8, s8> extract_s16(s16 hl);
+
+	u16 make_u16(u8 h, u8 l);
+	std::pair<u8, u8> extract_u16(u16 hl);
 }
