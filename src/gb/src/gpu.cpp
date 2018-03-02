@@ -16,35 +16,4 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <utils/type.h>
-
-namespace motane {
-    namespace gb {
-		class Interpreter;
-	
-	    class Registers {
-			friend class Interpreter;
-			
-			u8 a, b, c, d, e, h, l, f = 0;
-			u16 sp, pc = 0;
-			
-		public:
-			Registers()
-				:pc(0x100) {}
-		};
-		
-		class Clock {
-		    friend class Interpreter;
-			
-			u32 m, t = 0;
-		
-		public:
-			Clock() = default;
-			
-			void add_m(u32 c) { m += c; }
-			void add_t(u32 c) { t += c; }
-		};
-	}
-}
+#include <gb/gpu.h>

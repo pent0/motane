@@ -26,6 +26,8 @@
 
 namespace motane {
     namespace gb {
+		typedef u32 Address;
+
 		enum {
 			MEMORY_SIZE = 0xFFFF
 		};
@@ -38,7 +40,7 @@ namespace motane {
 			   : mem(MEMORY_SIZE) {}
 			
 			template <typename T>
-			T read(u32 offset) {
+			T read(Address offset) {
 				motane_log_info("Reading from offset: 0x{:x}", offset);
 
 				u32 mirror = 0;
@@ -62,7 +64,7 @@ namespace motane {
 			}
 			
 			template <typename T>
-			void write(s32 offset, T data) {
+			void write(Address offset, T data) {
 				//Yet no barrier
 				motane_log_info("Writing to offset: 0x{:x}", offset);
 			    memcpy(&mem[offset], &data, sizeof(T));

@@ -25,8 +25,8 @@
 
 namespace motane {
 	namespace gb {
-		Gameboy::Gameboy(const GameboyCPUType type) :
-			type(type), ex1(mem, reg, clock), state(GameboyState::Hold) {}
+		Gameboy::Gameboy(const CPUType type) :
+			type(type), ex1(mem, reg, clock), state(State::Hold) {}
 
 		void Gameboy::init(const char* romPath) {
 			rom = load(romPath);
@@ -41,16 +41,16 @@ namespace motane {
 
 		void Gameboy::hold() {
 			std::lock_guard<std::mutex> guard(mut);
-			state = GameboyState::Hold;
+			state = State::Hold;
 		}
 
 		void Gameboy::stop() {
 			std::lock_guard<std::mutex> guard(mut);
-			state = GameboyState::Stop;
+			state = State::Stop;
 		}
 
 		void Gameboy::play() {
-			if (state == GameboyState::Run || state == GameboyState::Stop) {
+			if (state == State::Run || state == State::Stop) {
 				motane_log_warn("Stop calling playing. It's already running, or stopped.");
 				return;
 			}
@@ -58,16 +58,16 @@ namespace motane {
 			//Run the interpreter in another thread, so we could easily stop it form outside
 			std::thread play_thread([this]() {
 				std::lock_guard<std::mutex> guard(mut);
-				state = GameboyState::Run;
+				state = State::Run;
 
-				while (state == GameboyState::Run) {
-					if (type == GameboyCPUType::Interpreter) {
+				while (state == State::Run) {
+					if (type == CPUType::Interpreter) {
 						//Nothing uses the memory and register rather than the fetch function
 						bool res = ex1.fetch();
 
 						if (!res) {
 							std::lock_guard<std::mutex> guard2(mut);
-							state = GameboyState::Stop;
+							state = State::Stop;
 						}
 					}
 				}

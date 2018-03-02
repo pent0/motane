@@ -23,18 +23,20 @@
 #include <gb/memory.h>
 #include <gb/register.h>
 
+#include <graphics/graphic.h>
+
 #include <utils/log.h>
 
 #include <mutex>
 
 namespace motane {
 	namespace gb {
-		enum class GameboyCPUType {
+		enum class CPUType {
 			Interpreter = 0,
 			DynarecLLVM = 1
 		};
 
-		enum class GameboyState {
+		enum class State {
 			Run = 0,
 			Hold = 1,
 			Stop = 2
@@ -47,13 +49,15 @@ namespace motane {
 
 			Interpreter ex1;
 			
-			GameboyCPUType type;
-			GameboyRom     rom;
-			GameboyState   state;
+			CPUType type;
+			Rom     rom;
+			State   state;
+
+			graphics::Graphic coreGraphic;
 
 			std::mutex     mut;
 		public:
-			Gameboy(const GameboyCPUType type);
+			Gameboy(const CPUType type);
 			void init(const char* romPath);
 			void hold();
 			void stop();

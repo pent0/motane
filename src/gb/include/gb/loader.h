@@ -41,13 +41,13 @@ namespace motane {
 			GB_IS_NEW_PUB_CODE_POINT = 0x33
 		};
 
-		enum class GameboyPublisher: u8 {
+		enum class Publisher: u8 {
             #define PUBLISHER(x, y, z) y = x,
                  #include "loader.def"
 			LastNoSense
 		};
 
-		enum class GameboyCart: u8 {
+		enum class Cart: u8 {
 			ROM_ONLY = 0x00,
 			MBC5 = 0x19,
 			MBC1 = 0x01,
@@ -79,9 +79,9 @@ namespace motane {
 			LAST_NOSENSE
 		};
 
-		struct GameboyRom {
-			GameboyPublisher publisher;
-			GameboyCart      cart;
+		struct Rom {
+			Publisher publisher;
+			Cart      cart;
 			std::string      title;
 			u32              manufactuerCode;
 
@@ -91,6 +91,6 @@ namespace motane {
 			u32               romSize, ramSize;
 		};
 
-		GameboyRom load(const std::string path);
+		Rom load(const std::string path);
 	}
 }

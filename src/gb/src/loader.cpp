@@ -23,8 +23,8 @@
 
 namespace motane {
 	namespace gb {
-		GameboyRom load(const std::string path) {
-			GameboyRom res; 
+		Rom load(const std::string path) {
+			Rom res; 
 			s16 tempPub;
 			std::ifstream file(path);
 			assert(file);
@@ -35,16 +35,16 @@ namespace motane {
 			file.read(&res.title[0], 15);
 
 			file.seekg(GB_CART_TYPE_POINT);
-			file.read(reinterpret_cast<char*>(&res.cart), sizeof(GameboyCart));
+			file.read(reinterpret_cast<char*>(&res.cart), sizeof(Cart));
 
 			file.seekg(GB_OLD_PUB_CODE_POINT);
-			file.read(reinterpret_cast<char*>(&tempPub), sizeof(GameboyPublisher));
+			file.read(reinterpret_cast<char*>(&tempPub), sizeof(Publisher));
 
 			if (tempPub == GB_IS_NEW_PUB_CODE_POINT) {
 				file.seekg(GB_NEW_PUB_CODE_POINT);
-				file.read(reinterpret_cast<char*>(&res.publisher), sizeof(GameboyPublisher));
+				file.read(reinterpret_cast<char*>(&res.publisher), sizeof(Publisher));
 			} else {
-				res.publisher = static_cast<GameboyPublisher>(tempPub);
+				res.publisher = static_cast<Publisher>(tempPub);
 			}
 
 			u8 temp1, temp2;
