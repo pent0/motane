@@ -13,6 +13,11 @@ namespace motane {
 			if (api == RenderAPI::OpenGL) {
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 				glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+				glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+				glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 			}
 
 			glfwWindowHint(GLFW_RESIZABLE, resizeable);
@@ -22,14 +27,10 @@ namespace motane {
 
 			glfwSetWindowPos(mainWindow, x, y);  
 			
-			std::function<void(GLFWwindow*, int, int)> poscallFunc = 
-				std::bind(&Window::onWindowPosChange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+			glfwMakeContextCurrent(mainWindow);
 
-			decltype(poscallFunc) sizecallFunc =
-				std::bind(&Window::onWindowSizeChange, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-
-			glfwSetWindowPosCallback(mainWindow, *poscallFunc.target<GLFWwindowposfun>());
-			glfwSetWindowSizeCallback(mainWindow, *sizecallFunc.target<GLFWwindowsizefun>());
+			if (api == RenderAPI::OpenGL)
+			    glViewport(0, 0, width, height);
 		}
 
 		std::string Window::title() const {
@@ -68,16 +69,6 @@ namespace motane {
 
 		void Window::pos(const math::vec2 newPos) {
 			glfwSetWindowPos(mainWindow, newPos.x, newPos.y);
-		}
-
-		void Window::onWindowSizeChange(GLFWwindow *window, int newSizeX, int newSizeY) {
-			_width = newSizeX;
-			_height = newSizeY;
-		}
-
-		void Window::onWindowPosChange(GLFWwindow *window, int newPosX, int newPosY) {
-			x = newPosX;
-			y = newPosY;
 		}
 	}
 }

@@ -40,11 +40,6 @@ namespace motane {
 			
 			RenderAPI api;
 
-		protected:
-
-			void onWindowSizeChange(GLFWwindow *window, int newSizeX, int newSizeY);
-			void onWindowPosChange(GLFWwindow *window, int newPosX, int newPosY);
-
 		public:
 
 			Window();
@@ -58,8 +53,10 @@ namespace motane {
 			// Split the window into 2 other windows. 
 			void split();
 
+			GLFWwindow* getNativeHandle() { return mainWindow; }
+
 			bool close() const;
-			void close(const bool op);
+			void close(const bool op);			
 
 			math::vec2 extent() const;
 
